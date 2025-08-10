@@ -15,10 +15,10 @@ export interface UserProfile extends BaseDocument {
   // Security fields
   loginAttempts: number;
   lockUntil?: Date;
-  passwordResetToken?: string;
-  passwordResetExpires?: Date;
-  emailVerificationToken?: string;
-  emailVerificationExpires?: Date;
+  passwordResetToken?: string | undefined;
+  passwordResetExpires?: Date | undefined;
+  emailVerificationToken?: string | undefined;
+  emailVerificationExpires?: Date | undefined;
 
   // OTP for two-factor authentication
   otp?: OTPData;
@@ -33,7 +33,7 @@ export interface UserProfile extends BaseDocument {
 
   // Metadata
   registrationIP?: string;
-  lastLoginIP?: string;
+  lastLoginIP?: string | undefined;
   preferredLanguage?: string;
   timezone?: string;
 }
@@ -76,14 +76,16 @@ export interface UserSafeProfile {
   role: UserRole;
   isEmailVerified: boolean;
   isActive: boolean;
-  lastLogin?: Date;
-  profilePicture?: string;
-  assessmentProgress?: {
-    currentStep: number;
-    highestLevelAchieved: string;
-    lastAssessmentDate?: Date;
-    totalAssessmentsTaken: number;
-  };
+  lastLogin?: Date | undefined;
+  profilePicture?: string | undefined;
+  assessmentProgress?:
+    | {
+        currentStep: number;
+        highestLevelAchieved: string;
+        lastAssessmentDate?: Date;
+        totalAssessmentsTaken: number;
+      }
+    | undefined;
   createdAt: Date;
   updatedAt: Date;
 }
