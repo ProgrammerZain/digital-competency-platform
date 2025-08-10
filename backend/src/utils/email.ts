@@ -44,11 +44,11 @@ export class EmailService {
       secure: config.EMAIL_SECURE,
       auth: {
         user: config.EMAIL_USER,
-        pass: config.EMAIL_PASS
+        pass: config.EMAIL_PASS,
       },
       tls: {
-        rejectUnauthorized: false
-      }
+        rejectUnauthorized: false,
+      },
     });
   }
 
@@ -63,7 +63,7 @@ export class EmailService {
         subject: options.subject,
         text: options.text,
         html: options.html,
-        attachments: options.attachments
+        attachments: options.attachments,
       };
 
       const result = await this.transporter.sendMail(mailOptions);
@@ -78,42 +78,54 @@ export class EmailService {
   /**
    * Send welcome email
    */
-  async sendWelcomeEmail(to: string, firstName: string, verificationToken?: string): Promise<boolean> {
+  async sendWelcomeEmail(
+    to: string,
+    firstName: string,
+    verificationToken?: string
+  ): Promise<boolean> {
     const template = this.getWelcomeEmailTemplate(firstName, verificationToken);
-    
+
     return this.sendEmail({
       to,
       subject: template.subject,
       text: template.text,
-      html: template.html
+      html: template.html,
     });
   }
 
   /**
    * Send email verification
    */
-  async sendEmailVerification(to: string, firstName: string, verificationToken: string): Promise<boolean> {
+  async sendEmailVerification(
+    to: string,
+    firstName: string,
+    verificationToken: string
+  ): Promise<boolean> {
     const template = this.getEmailVerificationTemplate(firstName, verificationToken);
-    
+
     return this.sendEmail({
       to,
       subject: template.subject,
       text: template.text,
-      html: template.html
+      html: template.html,
     });
   }
 
   /**
    * Send password reset email
    */
-  async sendPasswordResetEmail(to: string, firstName: string, resetToken: string): Promise<boolean> {
+  async sendPasswordResetEmail(
+    to: string,
+    firstName: string,
+    resetToken: string
+  ): Promise<boolean> {
     const template = this.getPasswordResetTemplate(firstName, resetToken);
-    
+
     return this.sendEmail({
       to,
       subject: template.subject,
       text: template.text,
-      html: template.html
+      html: template.html,
     });
   }
 
@@ -122,12 +134,12 @@ export class EmailService {
    */
   async sendOTPEmail(to: string, firstName: string, otp: string, action: string): Promise<boolean> {
     const template = this.getOTPTemplate(firstName, otp, action);
-    
+
     return this.sendEmail({
       to,
       subject: template.subject,
       text: template.text,
-      html: template.html
+      html: template.html,
     });
   }
 
@@ -135,19 +147,19 @@ export class EmailService {
    * Send assessment completion email
    */
   async sendAssessmentCompletionEmail(
-    to: string, 
-    firstName: string, 
-    level: string, 
+    to: string,
+    firstName: string,
+    level: string,
     score: number,
     certificateUrl?: string
   ): Promise<boolean> {
     const template = this.getAssessmentCompletionTemplate(firstName, level, score, certificateUrl);
-    
+
     return this.sendEmail({
       to,
       subject: template.subject,
       text: template.text,
-      html: template.html
+      html: template.html,
     });
   }
 
@@ -155,35 +167,37 @@ export class EmailService {
    * Send certificate email
    */
   async sendCertificateEmail(
-    to: string, 
-    firstName: string, 
+    to: string,
+    firstName: string,
     level: string,
     certificateBuffer: Buffer
   ): Promise<boolean> {
     const template = this.getCertificateTemplate(firstName, level);
-    
+
     return this.sendEmail({
       to,
       subject: template.subject,
       text: template.text,
       html: template.html,
-      attachments: [{
-        filename: `Digital_Competency_Certificate_${level}.pdf`,
-        content: certificateBuffer,
-        contentType: 'application/pdf'
-      }]
+      attachments: [
+        {
+          filename: `Digital_Competency_Certificate_${level}.pdf`,
+          content: certificateBuffer,
+          contentType: 'application/pdf',
+        },
+      ],
     });
   }
 
   // Email Templates
 
   private getWelcomeEmailTemplate(firstName: string, verificationToken?: string): EmailTemplate {
-    const verificationLink = verificationToken 
+    const verificationLink = verificationToken
       ? `${config.FRONTEND_URL}/verify-email?token=${verificationToken}`
       : '';
 
     const subject = 'Welcome to Digital Competency Platform! 🌟';
-    
+
     const text = `
 Hi ${firstName},
 
@@ -227,10 +241,14 @@ Digital Competency Platform Team
             <h2>Hi ${firstName},</h2>
             <p>Welcome to our community of learners working to improve their digital skills!</p>
             
-            ${verificationToken ? `
+            ${
+              verificationToken
+                ? `
             <p>To get started, please verify your email address:</p>
             <a href="${verificationLink}" class="button">Verify Email Address</a>
-            ` : ''}
+            `
+                : ''
+            }
             
             <h3>What's next?</h3>
             <ol>
@@ -252,11 +270,14 @@ Digital Competency Platform Team
     return { subject, text, html };
   }
 
-  private getEmailVerificationTemplate(firstName: string, verificationToken: string): EmailTemplate {
+  private getEmailVerificationTemplate(
+    firstName: string,
+    verificationToken: string
+  ): EmailTemplate {
     const verificationLink = `${config.FRONTEND_URL}/verify-email?token=${verificationToken}`;
-    
+
     const subject = 'Verify Your Email Address';
-    
+
     const text = `
 Hi ${firstName},
 
@@ -310,9 +331,9 @@ Digital Competency Platform Team
 
   private getPasswordResetTemplate(firstName: string, resetToken: string): EmailTemplate {
     const resetLink = `${config.FRONTEND_URL}/reset-password?token=${resetToken}`;
-    
+
     const subject = 'Reset Your Password';
-    
+
     const text = `
 Hi ${firstName},
 
@@ -366,7 +387,7 @@ Digital Competency Platform Team
 
   private getOTPTemplate(firstName: string, otp: string, action: string): EmailTemplate {
     const subject = `Your OTP Code: ${otp}`;
-    
+
     const text = `
 Hi ${firstName},
 
@@ -418,13 +439,13 @@ Digital Competency Platform Team
   }
 
   private getAssessmentCompletionTemplate(
-    firstName: string, 
-    level: string, 
+    firstName: string,
+    level: string,
     score: number,
     certificateUrl?: string
   ): EmailTemplate {
     const subject = `🎉 Assessment Completed - ${level} Level Achieved!`;
-    
+
     const text = `
 Hi ${firstName},
 
@@ -474,10 +495,14 @@ Digital Competency Platform Team
                 </ul>
             </div>
             
-            ${certificateUrl ? `
+            ${
+              certificateUrl
+                ? `
             <p>Your certificate is ready for download:</p>
             <a href="${certificateUrl}" class="button">Download Certificate</a>
-            ` : '<p>Your certificate will be available shortly.</p>'}
+            `
+                : '<p>Your certificate will be available shortly.</p>'
+            }
             
             <p>Keep up the great work on your digital learning journey!</p>
         </div>
@@ -494,7 +519,7 @@ Digital Competency Platform Team
 
   private getCertificateTemplate(firstName: string, level: string): EmailTemplate {
     const subject = `📜 Your Digital Competency Certificate - ${level} Level`;
-    
+
     const text = `
 Hi ${firstName},
 

@@ -31,15 +31,14 @@ class DatabaseConnection {
 
     try {
       console.log('📦 Connecting to MongoDB...');
-      
+
       await mongoose.connect(config.MONGODB_URI, connectionOptions);
-      
+
       this.isConnected = true;
       console.log('✅ MongoDB connected successfully');
-      
+
       // Set up connection event listeners
       this.setupEventListeners();
-      
     } catch (error) {
       console.error('❌ MongoDB connection error:', error);
       process.exit(1);
@@ -67,7 +66,7 @@ class DatabaseConnection {
       console.log('📦 Mongoose connected to MongoDB');
     });
 
-    connection.on('error', (error) => {
+    connection.on('error', error => {
       console.error('❌ Mongoose connection error:', error);
     });
 
@@ -86,7 +85,7 @@ class DatabaseConnection {
     });
 
     // Handle uncaught exceptions
-    process.on('uncaughtException', async (error) => {
+    process.on('uncaughtException', async error => {
       console.error('❌ Uncaught Exception:', error);
       await this.gracefulShutdown('uncaughtException');
     });
@@ -99,7 +98,7 @@ class DatabaseConnection {
 
   private async gracefulShutdown(signal: string): Promise<void> {
     console.log(`\n📦 Received ${signal}. Gracefully shutting down...`);
-    
+
     try {
       await this.disconnect();
       console.log('✅ Database connection closed successfully');

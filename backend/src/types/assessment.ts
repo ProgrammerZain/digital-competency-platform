@@ -1,11 +1,11 @@
-import { 
-  BaseDocument, 
-  AssessmentLevel, 
-  AssessmentStep, 
-  AssessmentStatus, 
-  DigitalCompetency, 
+import {
+  BaseDocument,
+  AssessmentLevel,
+  AssessmentStep,
+  AssessmentStatus,
+  DigitalCompetency,
   QuestionType,
-  CertificateStatus 
+  CertificateStatus,
 } from './index';
 
 // Question Interface
@@ -15,28 +15,28 @@ export interface Question extends BaseDocument {
   competency: DigitalCompetency;
   level: AssessmentLevel;
   step: AssessmentStep;
-  
+
   // Multiple choice options
   options?: QuestionOption[];
-  
+
   // Correct answer(s)
   correctAnswers: string[];
-  
+
   // Question metadata
   difficulty: number; // 1-5 scale
   timeAllowed: number; // in minutes
   points: number;
-  
+
   // Additional data
   explanation?: string;
   tags?: string[];
   isActive: boolean;
-  
+
   // Media attachments
   imageUrl?: string;
   audioUrl?: string;
   videoUrl?: string;
-  
+
   // Question statistics
   timesAnswered: number;
   correctAnswerRate: number;
@@ -54,34 +54,34 @@ export interface AssessmentSession extends BaseDocument {
   userId: string;
   step: AssessmentStep;
   status: AssessmentStatus;
-  
+
   // Questions for this session
   questions: AssessmentQuestion[];
-  
+
   // Timing
   startTime: Date;
   endTime?: Date;
   timeAllowed: number; // Total time in minutes
   timeRemaining?: number; // Remaining time in seconds
-  
+
   // Answers
   answers: AssessmentAnswer[];
-  
+
   // Results
   score?: number;
   percentage?: number;
   levelAchieved?: AssessmentLevel;
   passed: boolean;
-  
+
   // Next step eligibility
   canProceedToNextStep: boolean;
   nextStepUnlockedAt?: Date;
-  
+
   // Session metadata
   ipAddress?: string;
   userAgent?: string;
   browserFingerprint?: string;
-  
+
   // Security flags
   isCompleted: boolean;
   isSubmitted: boolean;
@@ -96,12 +96,12 @@ export interface AssessmentQuestion {
   level: AssessmentLevel;
   points: number;
   timeAllowed: number;
-  
+
   // For display during assessment
   questionText: string;
   questionType: QuestionType;
   options?: QuestionOption[];
-  
+
   // Media
   imageUrl?: string;
   audioUrl?: string;
@@ -115,7 +115,7 @@ export interface AssessmentAnswer {
   isCorrect: boolean;
   pointsEarned: number;
   answeredAt: Date;
-  
+
   // For tracking user behavior
   changedAnswers: number;
   tabSwitches: number;
@@ -132,39 +132,39 @@ export interface CheatingFlag {
 // Assessment Progress Interface
 export interface AssessmentProgress extends BaseDocument {
   userId: string;
-  
+
   // Overall progress
   currentStep: AssessmentStep;
   highestLevelAchieved: AssessmentLevel;
-  
+
   // Step-wise progress
   step1Completed: boolean;
   step1Score?: number;
   step1Level?: AssessmentLevel;
   step1CompletedAt?: Date;
-  
+
   step2Completed: boolean;
   step2Score?: number;
   step2Level?: AssessmentLevel;
   step2CompletedAt?: Date;
-  
+
   step3Completed: boolean;
   step3Score?: number;
   step3Level?: AssessmentLevel;
   step3CompletedAt?: Date;
-  
+
   // Overall statistics
   totalAssessmentsTaken: number;
   totalTimeSpent: number; // in minutes
   averageScore: number;
-  
+
   // Competency-wise scores
   competencyScores: CompetencyScore[];
-  
+
   // Restrictions
   canRetakeStep1: boolean;
   nextAssessmentDate?: Date;
-  
+
   // Achievement tracking
   achievements: Achievement[];
 }
@@ -191,31 +191,31 @@ export interface Achievement {
 export interface Certificate extends BaseDocument {
   userId: string;
   assessmentSessionId: string;
-  
+
   // Certificate details
   certificateNumber: string;
   level: AssessmentLevel;
   status: CertificateStatus;
-  
+
   // Scoring details
   score: number;
   percentage: number;
   competencyBreakdown: CompetencyScore[];
-  
+
   // Dates
   issuedAt: Date;
   expiresAt?: Date;
   validatedAt?: Date;
-  
+
   // Certificate file
   certificateUrl?: string;
   verificationCode: string;
-  
+
   // Issuer information
   issuedBy: string;
   issuerTitle: string;
   issuerSignature?: string;
-  
+
   // Verification
   isVerified: boolean;
   verificationDetails?: {
@@ -223,7 +223,7 @@ export interface Certificate extends BaseDocument {
     verifiedAt: Date;
     notes?: string;
   };
-  
+
   // Sharing
   isPublic: boolean;
   shareUrl?: string;
@@ -267,13 +267,13 @@ export interface AssessmentResultResponse {
   levelAchieved: AssessmentLevel;
   passed: boolean;
   canProceedToNextStep: boolean;
-  
+
   // Detailed breakdown
   competencyResults: CompetencyResult[];
   timeSpent: number;
   correctAnswers: number;
   totalQuestions: number;
-  
+
   // Next steps
   nextStepAvailable: boolean;
   nextStepUnlocksAt?: Date;
@@ -295,15 +295,15 @@ export interface AssessmentStatistics {
   completedAssessments: number;
   averageScore: number;
   averageCompletionTime: number;
-  
+
   // By step
   step1Stats: StepStatistics;
   step2Stats: StepStatistics;
   step3Stats: StepStatistics;
-  
+
   // By level
   levelDistribution: Record<AssessmentLevel, number>;
-  
+
   // Pass rates
   overallPassRate: number;
   passRateByStep: Record<AssessmentStep, number>;

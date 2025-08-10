@@ -13,10 +13,12 @@ class App {
 
   private initializeBasicMiddleware(): void {
     // Basic CORS
-    this.app.use(cors({
-      origin: config.ALLOWED_ORIGINS,
-      credentials: true,
-    }));
+    this.app.use(
+      cors({
+        origin: config.ALLOWED_ORIGINS,
+        credentials: true,
+      })
+    );
 
     // Basic JSON parsing
     this.app.use(express.json());

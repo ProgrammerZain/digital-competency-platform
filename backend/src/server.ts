@@ -31,7 +31,7 @@ class Server {
         console.log(`│  📚 Health Check: /health                   │`);
         console.log(`│  🔗 API Info: /api                         │`);
         console.log('└─────────────────────────────────────────────┘');
-        
+
         if (config.NODE_ENV === 'development') {
           console.log('\n💡 Development Mode Features:');
           console.log('   • Hot reloading enabled');
@@ -43,7 +43,6 @@ class Server {
 
       // Graceful shutdown handling
       this.setupGracefulShutdown(server);
-
     } catch (error) {
       console.error('❌ Failed to start server:', error);
       process.exit(1);
@@ -53,13 +52,13 @@ class Server {
   private setupGracefulShutdown(server: any): void {
     const gracefulShutdown = (signal: string) => {
       console.log(`\n🛑 Received ${signal}. Starting graceful shutdown...`);
-      
+
       server.close((err: Error | null) => {
         if (err) {
           console.error('❌ Error during server shutdown:', err);
           process.exit(1);
         }
-        
+
         console.log('✅ Server shut down successfully');
         // Database connection will be closed by database module
       });
@@ -73,7 +72,7 @@ class Server {
 
 // Start the server
 const server = new Server();
-server.start().catch((error) => {
+server.start().catch(error => {
   console.error('❌ Critical error starting server:', error);
   process.exit(1);
 });

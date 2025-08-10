@@ -5,7 +5,10 @@ import { UserRole } from '../types';
 
 // JWT Error types
 export class JWTError extends Error {
-  constructor(message: string, public code: string) {
+  constructor(
+    message: string,
+    public code: string
+  ) {
     super(message);
     this.name = 'JWTError';
   }
@@ -18,15 +21,11 @@ export class JWTUtils {
    */
   static generateAccessToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
     try {
-      return jwt.sign(
-        payload,
-        config.JWT_SECRET,
-        {
-          expiresIn: config.JWT_EXPIRE_TIME,
-          issuer: 'digital-competency-platform',
-          audience: 'digital-competency-users'
-        } as jwt.SignOptions
-      );
+      return jwt.sign(payload, config.JWT_SECRET, {
+        expiresIn: config.JWT_EXPIRE_TIME,
+        issuer: 'digital-competency-platform',
+        audience: 'digital-competency-users',
+      } as jwt.SignOptions);
     } catch (error) {
       throw new JWTError('Failed to generate access token', 'TOKEN_GENERATION_FAILED');
     }
@@ -37,15 +36,11 @@ export class JWTUtils {
    */
   static generateRefreshToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
     try {
-      return jwt.sign(
-        payload,
-        config.JWT_REFRESH_SECRET,
-        {
-          expiresIn: config.JWT_REFRESH_EXPIRE_TIME,
-          issuer: 'digital-competency-platform',
-          audience: 'digital-competency-users'
-        } as jwt.SignOptions
-      );
+      return jwt.sign(payload, config.JWT_REFRESH_SECRET, {
+        expiresIn: config.JWT_REFRESH_EXPIRE_TIME,
+        issuer: 'digital-competency-platform',
+        audience: 'digital-competency-users',
+      } as jwt.SignOptions);
     } catch (error) {
       throw new JWTError('Failed to generate refresh token', 'REFRESH_TOKEN_GENERATION_FAILED');
     }
@@ -54,23 +49,19 @@ export class JWTUtils {
   /**
    * Generate both access and refresh tokens
    */
-  static generateTokenPair(
-    userId: string, 
-    email: string, 
-    role: UserRole
-  ): JWTTokens {
+  static generateTokenPair(userId: string, email: string, role: UserRole): JWTTokens {
     const payload = { userId, email, role };
-    
+
     const accessToken = this.generateAccessToken(payload);
     const refreshToken = this.generateRefreshToken(payload);
-    
+
     // Calculate expiration time in seconds
     const expiresIn = this.getTokenExpirationTime(config.JWT_EXPIRE_TIME);
-    
+
     return {
       accessToken,
       refreshToken,
-      expiresIn
+      expiresIn,
     };
   }
 
@@ -81,9 +72,9 @@ export class JWTUtils {
     try {
       const decoded = jwt.verify(token, config.JWT_SECRET, {
         issuer: 'digital-competency-platform',
-        audience: 'digital-competency-users'
+        audience: 'digital-competency-users',
       }) as JWTPayload;
-      
+
       return decoded;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
@@ -105,9 +96,9 @@ export class JWTUtils {
     try {
       const decoded = jwt.verify(token, config.JWT_REFRESH_SECRET, {
         issuer: 'digital-competency-platform',
-        audience: 'digital-competency-users'
+        audience: 'digital-competency-users',
       }) as JWTPayload;
-      
+
       return decoded;
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
@@ -117,7 +108,10 @@ export class JWTUtils {
       } else if (error instanceof jwt.NotBeforeError) {
         throw new JWTError('Refresh token not active', 'REFRESH_TOKEN_NOT_ACTIVE');
       } else {
-        throw new JWTError('Refresh token verification failed', 'REFRESH_TOKEN_VERIFICATION_FAILED');
+        throw new JWTError(
+          'Refresh token verification failed',
+          'REFRESH_TOKEN_VERIFICATION_FAILED'
+        );
       }
     }
   }
@@ -140,7 +134,7 @@ export class JWTUtils {
     try {
       const decoded = this.decodeToken(token);
       if (!decoded || !decoded.exp) return true;
-      
+
       const currentTime = Math.floor(Date.now() / 1000);
       return decoded.exp < currentTime;
     } catch (error) {
@@ -155,13 +149,18 @@ export class JWTUtils {
     // Parse time strings like '15m', '1h', '7d', etc.
     const unit = timeString.slice(-1);
     const value = parseInt(timeString.slice(0, -1));
-    
+
     switch (unit) {
-      case 's': return value;
-      case 'm': return value * 60;
-      case 'h': return value * 60 * 60;
-      case 'd': return value * 24 * 60 * 60;
-      default: return 15 * 60; // Default to 15 minutes
+      case 's':
+        return value;
+      case 'm':
+        return value * 60;
+      case 'h':
+        return value * 60 * 60;
+      case 'd':
+        return value * 24 * 60 * 60;
+      default:
+        return 15 * 60; // Default to 15 minutes
     }
   }
 
@@ -172,7 +171,7 @@ export class JWTUtils {
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return null;
     }
-    
+
     return authHeader.substring(7); // Remove 'Bearer ' prefix
   }
 
@@ -182,13 +181,9 @@ export class JWTUtils {
   static refreshAccessToken(refreshToken: string): JWTTokens {
     try {
       const decoded = this.verifyRefreshToken(refreshToken);
-      
+
       // Generate new token pair
-      return this.generateTokenPair(
-        decoded.userId,
-        decoded.email,
-        decoded.role
-      );
+      return this.generateTokenPair(decoded.userId, decoded.email, decoded.role);
     } catch (error) {
       throw new JWTError('Failed to refresh access token', 'TOKEN_REFRESH_FAILED');
     }
@@ -201,10 +196,10 @@ export class JWTUtils {
     try {
       const decoded = this.decodeToken(token);
       if (!decoded || !decoded.exp) return 0;
-      
+
       const currentTime = Math.floor(Date.now() / 1000);
       const remainingTime = decoded.exp - currentTime;
-      
+
       return Math.max(0, remainingTime);
     } catch (error) {
       return 0;
@@ -218,11 +213,11 @@ export class JWTUtils {
     try {
       const parts = token.split('.');
       if (parts.length !== 3) return false;
-      
+
       // Try to decode each part
       JSON.parse(Buffer.from(parts[0], 'base64').toString());
       JSON.parse(Buffer.from(parts[1], 'base64').toString());
-      
+
       return true;
     } catch (error) {
       return false;
@@ -235,34 +230,30 @@ export class JWTUtils {
   static generateSecureToken(length: number = 32): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
-    
+
     for (let i = 0; i < length; i++) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    
+
     return result;
   }
 
   /**
    * Create a temporary token for specific actions (email verification, password reset)
    */
-  static generateActionToken(
-    userId: string,
-    action: string,
-    expiresIn: string = '1h'
-  ): string {
+  static generateActionToken(userId: string, action: string, expiresIn: string = '1h'): string {
     try {
       return jwt.sign(
-        { 
-          userId, 
+        {
+          userId,
           action,
-          timestamp: Date.now()
+          timestamp: Date.now(),
         },
         config.JWT_SECRET,
         {
           expiresIn,
           issuer: 'digital-competency-platform',
-          audience: 'digital-competency-actions'
+          audience: 'digital-competency-actions',
         } as jwt.SignOptions
       );
     } catch (error) {
@@ -277,13 +268,13 @@ export class JWTUtils {
     try {
       const decoded = jwt.verify(token, config.JWT_SECRET, {
         issuer: 'digital-competency-platform',
-        audience: 'digital-competency-actions'
+        audience: 'digital-competency-actions',
       }) as any;
-      
+
       if (decoded.action !== expectedAction) {
         throw new JWTError('Invalid action token', 'INVALID_ACTION_TOKEN');
       }
-      
+
       return { userId: decoded.userId };
     } catch (error) {
       if (error instanceof JWTError) {
