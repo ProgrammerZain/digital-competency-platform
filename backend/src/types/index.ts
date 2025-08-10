@@ -186,3 +186,4 @@ export interface ScoreRangeFilter {
 // Export all types
 export * from './auth';
 export * from './assessment';
+export * from './mongoose';
