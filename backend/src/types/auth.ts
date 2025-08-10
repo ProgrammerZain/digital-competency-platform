@@ -11,7 +11,7 @@ export interface UserProfile extends BaseDocument {
   isActive: boolean;
   lastLogin?: Date;
   profilePicture?: string;
-  
+
   // Security fields
   loginAttempts: number;
   lockUntil?: Date;
@@ -19,10 +19,10 @@ export interface UserProfile extends BaseDocument {
   passwordResetExpires?: Date;
   emailVerificationToken?: string;
   emailVerificationExpires?: Date;
-  
+
   // OTP for two-factor authentication
   otp?: OTPData;
-  
+
   // Assessment Progress
   assessmentProgress?: {
     currentStep: number;
@@ -30,7 +30,7 @@ export interface UserProfile extends BaseDocument {
     lastAssessmentDate?: Date;
     totalAssessmentsTaken: number;
   };
-  
+
   // Metadata
   registrationIP?: string;
   lastLoginIP?: string;
